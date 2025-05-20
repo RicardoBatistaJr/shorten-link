@@ -3,8 +3,10 @@ package com.ricardo.link_shorten.model.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,6 +14,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Table(name="users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,5 +34,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ShortenedLink> shortenedLinks;
 
-
+    public User(String email, String password, String username) {
+        this.email = email;
+        this.password = password;
+        this.username = username;
+        this.shortenedLinks = new ArrayList<>();
+    }
 }

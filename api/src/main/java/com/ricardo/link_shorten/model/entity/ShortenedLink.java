@@ -4,6 +4,7 @@ import com.ricardo.link_shorten.model.enums.LinkStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -12,6 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "links")
 public class ShortenedLink {
 
     @Id
@@ -20,7 +23,7 @@ public class ShortenedLink {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String shortUrl;
+    private String shortCode;
 
     @Column(nullable = false)
     private String originalUrl;
@@ -35,4 +38,12 @@ public class ShortenedLink {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public ShortenedLink(String shortCode, String originalUrl, Integer clicks, LinkStatus status, User user) {
+        this.shortCode = shortCode;
+        this.originalUrl = originalUrl;
+        this.clicks = clicks;
+        this.status = status;
+        this.user = user;
+    }
 }
