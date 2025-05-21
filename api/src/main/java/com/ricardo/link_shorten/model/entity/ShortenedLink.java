@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -38,6 +39,10 @@ public class ShortenedLink {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "shortenedLink", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<LinkAccess> linkAccessList;
+
 
     public ShortenedLink(String shortCode, String originalUrl, Integer clicks, LinkStatus status, User user) {
         this.shortCode = shortCode;

@@ -1,7 +1,7 @@
 package com.ricardo.link_shorten.controller;
 
 import com.ricardo.link_shorten.model.dto.ShortenedLinkResponseDto;
-import com.ricardo.link_shorten.service.LinkService;
+import com.ricardo.link_shorten.service.ShortenedLinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +16,16 @@ import java.util.UUID;
 @RequestMapping("/links")
 public class LinkController {
 
-    private final LinkService linkService;
+    private final ShortenedLinkService shortenedLinkService;
 
     @Autowired
-    public LinkController(LinkService linkService){
-        this.linkService = linkService;
+    public LinkController(ShortenedLinkService shortenedLinkService){
+        this.shortenedLinkService = shortenedLinkService;
     }
 
     @PostMapping("/shorten")
     public ResponseEntity<ShortenedLinkResponseDto> shortenLink(@RequestParam String url, @RequestParam UUID userId){
-        ShortenedLinkResponseDto response = linkService.shortenLink(userId, url);
+        ShortenedLinkResponseDto response = shortenedLinkService.shortenLink(userId, url);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

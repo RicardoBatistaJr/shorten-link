@@ -17,11 +17,13 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder){
+    public UserService(UserRepository userRepository, UserMapper userMapper, BCryptPasswordEncoder passwordEncoder){
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -41,12 +43,12 @@ public class UserService {
             throw new UserNotFoundException();
         }
 
-        return UserMapper.toDto(user.get());
+        return userMapper.toDto(user.get());
     }
 
     public UserResponseDto createUser(UserRequestDto request){
         String encryptedPassword = passwordEncoder.encode(request.getPassword());
         User newUser = new User(request.getEmail(), encryptedPassword, request.getUsername());
-        return UserMapper.toDto(userRepository.save(newUser));
+        return userMapper.toDto(userRepository.save(newUser));
     }
 }

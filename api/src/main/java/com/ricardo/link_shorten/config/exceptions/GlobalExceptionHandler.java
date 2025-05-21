@@ -13,4 +13,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUserNotFoundException(Exception ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     };
+    @ExceptionHandler(ShortenedLinkNotFoundException.class)
+    public ResponseEntity<String> handleShortenedLinkNotFoundException(Exception ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    };
 }
