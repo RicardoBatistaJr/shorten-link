@@ -11,14 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class ShortenedLinkMapper {
     private final AppProperties appProperties;
+    private final UserMapper userMapper;
 
     @Autowired
-    public ShortenedLinkMapper(AppProperties appProperties) {
+    public ShortenedLinkMapper(AppProperties appProperties, UserMapper userMapper) {
         this.appProperties = appProperties;
+        this.userMapper = userMapper;
     }
 
     public ShortenedLinkResponseDto toDto(ShortenedLink link){
-        UserResponseDto userDto = UserMapper.toDto(link.getUser());
+        UserResponseDto userDto = userMapper.toDto(link.getUser());
         String shortenedUrl = appProperties.getBaseUrl() + link.getShortCode();
         return new ShortenedLinkResponseDto(shortenedUrl,link.getOriginalUrl(),0, LinkStatus.AVAILABLE,userDto);
     }
