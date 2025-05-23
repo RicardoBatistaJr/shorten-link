@@ -18,29 +18,19 @@ public class LinkAccessService {
 
     private final LinkAccessRepository linkAccessRepository;
     private final LinkAccessMapper linkAccessMapper;
-    private final ShortenedLinkService linkService;
 
     @Autowired
-    public LinkAccessService(LinkAccessRepository linkAccessRepository, LinkAccessMapper linkAccessMapper, ShortenedLinkService shortenedLinkService) {
+    public LinkAccessService(LinkAccessRepository linkAccessRepository, LinkAccessMapper linkAccessMapper) {
         this.linkAccessRepository = linkAccessRepository;
-        this.linkService = shortenedLinkService;
         this.linkAccessMapper = linkAccessMapper;
     }
 
-    public LinkAccessResponseDto createLinkAccess(String shortCode, HttpServletRequest request) throws BadRequestException {
-        ShortenedLink link = linkService.getEntityByShortcode(shortCode);
-
-        if (link == null) {
-            throw new BadRequestException("Link encurtado não encontrado para o código: " + shortCode);
-        }
-
+    public LinkAccessResponseDto createLinkAccess(ShortenedLink link, HttpServletRequest request) throws BadRequestException {
         String ip = extractClientIp(request);
         String userAgent = request.getHeader("User-Agent");
         LocalDateTime accessTime = LocalDateTime.now();
 
         LinkAccess access = new LinkAccess(ip, userAgent, accessTime, link);
-        linkService.increaseClickCount(link);
-
         LinkAccess result = linkAccessRepository.save(access);
 
         return linkAccessMapper.toDto(result);

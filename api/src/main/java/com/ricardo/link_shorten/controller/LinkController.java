@@ -2,6 +2,7 @@ package com.ricardo.link_shorten.controller;
 
 import com.ricardo.link_shorten.model.dto.ShortenedLinkResponseDto;
 import com.ricardo.link_shorten.service.ShortenedLinkService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,8 +31,8 @@ public class LinkController {
     }
 
     @GetMapping("/{shortCode}")
-    public ResponseEntity<Void> redirect(@PathVariable String shortCode, HttpServletResponse response) throws IOException {
-        String originalUrl = shortenedLinkService.getOriginalUrl(shortCode);
+    public ResponseEntity<Void> redirect(@PathVariable String shortCode, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String originalUrl = shortenedLinkService.redirectUrl(shortCode, request);
 
         if(originalUrl!=null){
             return ResponseEntity.status(HttpStatus.FOUND).header("Location", originalUrl).build();
@@ -43,5 +44,11 @@ public class LinkController {
     @GetMapping()
     public ResponseEntity<List<ShortenedLinkResponseDto>> getAllLinks(){
         return ResponseEntity.status(HttpStatus.OK).body(shortenedLinkService.getAllLinks());
+    }
+
+    @PatchMapping("/{shortCode}")
+    public ResponseEntity<Void> cancelLink(@PathVariable String shortCode){
+        shortenedLinkService.cancelLink(shortCode);
+        return ResponseEntity.ok().build();
     }
 }
