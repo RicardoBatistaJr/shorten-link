@@ -23,6 +23,7 @@ public class ShortenedLinkService {
     private final LinkRepository linkRepository;
     private final UserService userService;
     private final ShortenedLinkMapper shortenedLinkMapper;
+    private final String PROTOCOL = "https://";
 
     @Autowired
     public ShortenedLinkService(LinkRepository linkRepository, UserService userService, ShortenedLinkMapper shortenedLinkMapper) {
@@ -42,7 +43,7 @@ public class ShortenedLinkService {
         }
 
 
-        ShortenedLink link = new ShortenedLink(shortCode,url,0, LinkStatus.AVAILABLE,user);
+        ShortenedLink link = new ShortenedLink(shortCode,PROTOCOL + url,0, LinkStatus.AVAILABLE,user);
         linkRepository.save(link);
 
         return shortenedLinkMapper.toDto(link);
@@ -58,18 +59,22 @@ public class ShortenedLinkService {
         return shortenedLinkOpt.get();
     }
 
-    public ShortenedLink updateShortenedLink(ShortenedLink link) throws BadRequestException {
-        if (link == null) {
-            throw new BadRequestException("Link não pode ser nulo");
-        }
-        return linkRepository.save(link);
-    }
-
     public ShortenedLink increaseClickCount(ShortenedLink link) throws BadRequestException {
         if (link == null) {
             throw new BadRequestException("Link não pode ser nulo");
         }
         ShortenedLink increasedLink = new ShortenedLink(link.getId(), link.getShortCode(), link.getOriginalUrl(), link.getClicks() + 1, link.getStatus(), link.getUser(), link.getLinkAccessList());
         return linkRepository.save(increasedLink);
+    }
+
+    public String getOriginalUrl(String shortCode){
+        System.out.println("=============>" + shortCode);
+        Optional<ShortenedLink> link = linkRepository.findByShortCode(shortCode);
+        System.out.println(link.get().getShortCode());
+
+        if(link.isEmpty()){
+            throw new ShortenedLinkNotFoundException();
+        }
+        return link.get().getOriginalUrl();
     }
 }

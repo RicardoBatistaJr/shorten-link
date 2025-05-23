@@ -1,15 +1,27 @@
 version: '3.8'
+
 services:
   app:
     image: link-shorten-img
-    ports:
-      - "9292:9292"
     depends_on:
       - postgres
     environment:
       - SPRING_DATASOURCE_URL=${POSTGRES_DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    labels:
+    - "traefik.enable=true"
+
+    - "traefik.http.routers.shorturl.rule=PathPrefix(`/`)"
+    - "traefik.http.routers.shorturl.entrypoints=web"
+    - "traefik.http.routers.shorturl.middlewares=shorturl-rewrite"
+    - "traefik.http.routers.shorturl.service=shorturl"
+    - "traefik.http.services.shorturl.loadbalancer.server.port=9292"
+
+    - "traefik.http.middlewares.shorturl-rewrite.replacepathregex.regex=^/([^/]+)"
+    - "traefik.http.middlewares.shorturl-rewrite.replacepathregex.replacement=/links/$1"
+    networks:
+      - web
 
   postgres:
     image: postgres:15
@@ -17,10 +29,29 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - web
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8081:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - web
 
 volumes:
   postgres_data:
+
+networks:
+  web:
+    driver: bridge

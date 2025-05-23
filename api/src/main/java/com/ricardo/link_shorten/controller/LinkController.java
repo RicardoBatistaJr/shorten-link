@@ -2,14 +2,13 @@ package com.ricardo.link_shorten.controller;
 
 import com.ricardo.link_shorten.model.dto.ShortenedLinkResponseDto;
 import com.ricardo.link_shorten.service.ShortenedLinkService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -27,5 +26,16 @@ public class LinkController {
     public ResponseEntity<ShortenedLinkResponseDto> shortenLink(@RequestParam String url, @RequestParam UUID userId){
         ShortenedLinkResponseDto response = shortenedLinkService.shortenLink(userId, url);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{shortCode}")
+    public ResponseEntity<Void> redirect(@PathVariable String shortCode, HttpServletResponse response) throws IOException {
+        String originalUrl = shortenedLinkService.getOriginalUrl(shortCode);
+
+        if(originalUrl!=null){
+            return ResponseEntity.status(HttpStatus.FOUND).header("Location", originalUrl).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }
