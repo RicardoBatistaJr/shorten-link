@@ -1,14 +1,26 @@
 version: '3.8'
-
 services:
   app:
-    image: link-shorten
+    image: link-shorten-img
     ports:
       - "9292:9292"
+    depends_on:
+      - postgres
     environment:
-      - PORT=${PORT}
-      - APP_BASE_URL=${APP_BASE_URL}
-      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_URL=${POSTGRES_DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
-      - SPRING_DATASOURCE_DRIVER=${SPRING_DATASOURCE_DRIVER}
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
