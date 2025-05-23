@@ -1,49 +1,43 @@
 package com.ricardo.link_shorten.service;
 
-import com.ricardo.link_shorten.config.AppProperties;
 import com.ricardo.link_shorten.config.exceptions.ShortenedLinkNotFoundException;
 import com.ricardo.link_shorten.mapper.ShortenedLinkMapper;
-import com.ricardo.link_shorten.mapper.UserMapper;
 import com.ricardo.link_shorten.model.dto.ShortenedLinkResponseDto;
-import com.ricardo.link_shorten.model.dto.UserResponseDto;
 import com.ricardo.link_shorten.model.entity.ShortenedLink;
-import com.ricardo.link_shorten.model.entity.User;
-import com.ricardo.link_shorten.model.enums.LinkStatus;
+import com.ricardo.link_shorten.model.enums.LinkStatusEnum;
 import com.ricardo.link_shorten.repository.LinkRepository;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ShortenedLinkService {
 
     private final LinkRepository linkRepository;
-    private final UserService userService;
     private final ShortenedLinkMapper shortenedLinkMapper;
     private final String PROTOCOL = "https://";
 
     @Autowired
-    public ShortenedLinkService(LinkRepository linkRepository, UserService userService, ShortenedLinkMapper shortenedLinkMapper) {
+    public ShortenedLinkService(LinkRepository linkRepository, ShortenedLinkMapper shortenedLinkMapper) {
         this.linkRepository = linkRepository;
-        this.userService = userService;
         this.shortenedLinkMapper = shortenedLinkMapper;
     }
 
-    public ShortenedLinkResponseDto shortenLink(UUID userId, String url){
+    public ShortenedLinkResponseDto shortenLink(String url){
         String shortCode = CodeGeneratorService.generateCode();
-        User user = userService.getUserEntityById(userId);
 
-        Optional<ShortenedLink> shortenedLink = linkRepository.findByOriginalUrlAndUser(url, user);
+        Optional<ShortenedLink> shortenedLink = linkRepository.findByOriginalUrl(url);
 
         if(shortenedLink.isPresent()){
             return shortenedLinkMapper.toDto(shortenedLink.get());
         }
 
 
-        ShortenedLink link = new ShortenedLink(shortCode,PROTOCOL + url,0, LinkStatus.AVAILABLE,user);
+        ShortenedLink link = new ShortenedLink(shortCode,PROTOCOL + url,0, LinkStatusEnum.AVAILABLE);
         linkRepository.save(link);
 
         return shortenedLinkMapper.toDto(link);
@@ -63,18 +57,21 @@ public class ShortenedLinkService {
         if (link == null) {
             throw new BadRequestException("Link não pode ser nulo");
         }
-        ShortenedLink increasedLink = new ShortenedLink(link.getId(), link.getShortCode(), link.getOriginalUrl(), link.getClicks() + 1, link.getStatus(), link.getUser(), link.getLinkAccessList());
+        ShortenedLink increasedLink = new ShortenedLink(link.getId(), link.getShortCode(), link.getOriginalUrl(), link.getClicks() + 1, link.getStatus(), link.getLinkAccessList());
         return linkRepository.save(increasedLink);
     }
 
     public String getOriginalUrl(String shortCode){
-        System.out.println("=============>" + shortCode);
         Optional<ShortenedLink> link = linkRepository.findByShortCode(shortCode);
-        System.out.println(link.get().getShortCode());
 
         if(link.isEmpty()){
             throw new ShortenedLinkNotFoundException();
         }
         return link.get().getOriginalUrl();
+    }
+
+    public List<ShortenedLinkResponseDto> getAllLinks(){
+        List<ShortenedLink> links = linkRepository.findByStatus(LinkStatusEnum.AVAILABLE);
+        return links.stream().map(link -> new ShortenedLinkResponseDto(link.getShortCode(), link.getOriginalUrl(), link.getClicks())).toList();
     }
 }

@@ -2,27 +2,24 @@ package com.ricardo.link_shorten.mapper;
 
 import com.ricardo.link_shorten.config.AppProperties;
 import com.ricardo.link_shorten.model.dto.ShortenedLinkResponseDto;
-import com.ricardo.link_shorten.model.dto.UserResponseDto;
 import com.ricardo.link_shorten.model.entity.ShortenedLink;
-import com.ricardo.link_shorten.model.enums.LinkStatus;
+import com.ricardo.link_shorten.model.enums.LinkStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ShortenedLinkMapper {
     private final AppProperties appProperties;
-    private final UserMapper userMapper;
 
     @Autowired
-    public ShortenedLinkMapper(AppProperties appProperties, UserMapper userMapper) {
+    public ShortenedLinkMapper(AppProperties appProperties) {
         this.appProperties = appProperties;
-        this.userMapper = userMapper;
     }
 
     public ShortenedLinkResponseDto toDto(ShortenedLink link){
-        UserResponseDto userDto = userMapper.toDto(link.getUser());
+
         String shortenedUrl = appProperties.getBaseUrl() + link.getShortCode();
-        return new ShortenedLinkResponseDto(shortenedUrl,link.getOriginalUrl(),0, LinkStatus.AVAILABLE,userDto);
+        return new ShortenedLinkResponseDto(shortenedUrl,link.getOriginalUrl(),0, LinkStatusEnum.AVAILABLE);
     }
 
     public String getShortUrl(ShortenedLink link){

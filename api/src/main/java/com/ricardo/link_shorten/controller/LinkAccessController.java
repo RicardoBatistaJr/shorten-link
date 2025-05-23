@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/access")
+@RequestMapping("/api/access")
 public class LinkAccessController {
 
     private final LinkAccessService linkAccessService;
@@ -28,4 +28,5 @@ public class LinkAccessController {
         LinkAccessResponseDto response = linkAccessService.createLinkAccess(shortCode, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }

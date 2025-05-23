@@ -1,7 +1,6 @@
 package com.ricardo.link_shorten.model.dto;
 
-import com.ricardo.link_shorten.model.entity.User;
-import com.ricardo.link_shorten.model.enums.LinkStatus;
+import com.ricardo.link_shorten.model.enums.LinkStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +12,4 @@ public class ShortenedLinkResponseDto {
     private String shortUrl;
     private String originalUrl;
     private Integer clicks;
-    private LinkStatus status;
-    private UserResponseDto creator;
 }

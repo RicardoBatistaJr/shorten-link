@@ -1,5 +1,5 @@
 package com.ricardo.link_shorten.model.enums;
 
-public enum LinkStatus {
+public enum LinkStatusEnum {
     CANCELLED, EXPIRED, AVAILABLE
 }

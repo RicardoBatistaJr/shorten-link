@@ -9,10 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/links")
+@RequestMapping("/api/links")
 public class LinkController {
 
     private final ShortenedLinkService shortenedLinkService;
@@ -23,8 +24,8 @@ public class LinkController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<ShortenedLinkResponseDto> shortenLink(@RequestParam String url, @RequestParam UUID userId){
-        ShortenedLinkResponseDto response = shortenedLinkService.shortenLink(userId, url);
+    public ResponseEntity<ShortenedLinkResponseDto> shortenLink(@RequestParam String url){
+        ShortenedLinkResponseDto response = shortenedLinkService.shortenLink(url);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -37,5 +38,10 @@ public class LinkController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<ShortenedLinkResponseDto>> getAllLinks(){
+        return ResponseEntity.status(HttpStatus.OK).body(shortenedLinkService.getAllLinks());
     }
 }

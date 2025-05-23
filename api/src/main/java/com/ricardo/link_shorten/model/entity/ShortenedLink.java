@@ -1,6 +1,6 @@
 package com.ricardo.link_shorten.model.entity;
 
-import com.ricardo.link_shorten.model.enums.LinkStatus;
+import com.ricardo.link_shorten.model.enums.LinkStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,21 +34,15 @@ public class ShortenedLink {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LinkStatus status;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private LinkStatusEnum status;
 
     @OneToMany(mappedBy = "shortenedLink", cascade = CascadeType.ALL, orphanRemoval = true)
     List<LinkAccess> linkAccessList;
 
-
-    public ShortenedLink(String shortCode, String originalUrl, Integer clicks, LinkStatus status, User user) {
+    public ShortenedLink(String shortCode, String originalUrl, Integer clicks, LinkStatusEnum status) {
         this.shortCode = shortCode;
         this.originalUrl = originalUrl;
         this.clicks = clicks;
         this.status = status;
-        this.user = user;
     }
 }
