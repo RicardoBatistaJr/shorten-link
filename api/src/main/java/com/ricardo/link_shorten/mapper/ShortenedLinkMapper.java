@@ -17,9 +17,8 @@ public class ShortenedLinkMapper {
     }
 
     public ShortenedLinkResponseDto toDto(ShortenedLink link){
-
         String shortenedUrl = appProperties.getBaseUrl() + link.getShortCode();
-        return new ShortenedLinkResponseDto(shortenedUrl,link.getOriginalUrl(),0);
+        return new ShortenedLinkResponseDto(link.getShortCode(), shortenedUrl,link.getOriginalUrl(),0);
     }
 
     public String getShortUrl(ShortenedLink link){

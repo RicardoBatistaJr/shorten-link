@@ -74,7 +74,7 @@ public class ShortenedLinkService {
 
     public List<ShortenedLinkResponseDto> getAllLinks(){
         List<ShortenedLink> links = linkRepository.findByStatus(LinkStatusEnum.AVAILABLE);
-        return links.stream().map(link -> new ShortenedLinkResponseDto(link.getShortCode(), link.getOriginalUrl(), link.getClicks())).toList();
+        return links.stream().map(shortenedLinkMapper::toDto).toList();
     }
 
     public void cancelLink(String shortCode){

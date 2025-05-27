@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ShortenedLinkResponseDto {
+    private String shortCode;
     private String shortUrl;
     private String originalUrl;
     private Integer clicks;
