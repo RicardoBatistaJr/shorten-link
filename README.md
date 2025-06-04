@@ -57,7 +57,7 @@ Também pode adicionar manualmente as variáveis de ambiente no seu sistema segu
 ```bash
 mvn clean package 
 ```
-* #### 3.2 Buildar a iamgem docker do projeto:
+* #### 3.2 Buildar a imagem docker do projeto:
 ```bash
 docker build -t link-shorten-img .
 ```
